@@ -44,7 +44,7 @@ input[type=checkbox]{accent-color:#7c3aed}
 .cat-btn:hover{filter:brightness(1.08)}
 
 /* Lang/theme pill */
-.pill-btn{border:none;padding:5px 11px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:0.05em}
+.pill-btn{border:none;padding:5px 11px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:0.05em}
 
 /* Toast */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:8px 20px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:200}
@@ -93,7 +93,7 @@ const EXTRA_MODIFIERS = [
   {id:"long_neck",en:"Long Neck",ru:"Длинная Шея",desc:"an extremely elongated neck stretching far above the body"},
   {id:"hunchback",en:"Hunchback",ru:"Горб",desc:"a pronounced muscle and bone hump rising from the upper back"},
   {id:"elongated_body",en:"Elongated Body",ru:"Вытянутое Тело",desc:"the torso stretched to twice its normal length"},
-  {id:"serpentine_body",en:"Serpentine Body",ru:"Змеиное Тело",desc:"the body reshaped into a long sinuous snake-like form"},
+  {id:"serpentine_body",en:"Skelet/Zombi",ru:"Скелет/Зомби",desc:"the body reshaped into a long sinuous snake-like form"},
   {id:"two_horn_pairs",en:"Two Horn Pairs",ru:"Две Пары Рогов",desc:"two separate pairs of horns stacked above each other on the skull"},
   {id:"crown_of_horns",en:"Crown Of Horns",ru:"Корона Рогов",desc:"a full ring of outward-pointing horns circling the top of the skull"},
   {id:"double_fins",en:"Double Fins",ru:"Двойные Плавники",desc:"a second set of fins mirroring the first along the opposite side"},
@@ -386,7 +386,7 @@ function renderCard(slot) {
 
   const iconLabel = mk("div",{style:{display:"flex",alignItems:"center",gap:"6px"}});
   iconLabel.append(mk("span",{style:{fontSize:"14px"}}, SLOT_ICONS[slot]));
-  const lbl = mk("span",{id:"slotlabel-"+slot,style:{fontSize:"10px",fontWeight:"600",
+  const lbl = mk("span",{id:"slotlabel-"+slot,style:{fontSize:"16px",fontWeight:"600",
     color:t.textMuted,textTransform:"uppercase",letterSpacing:"0.09em"}},
     SLOT_LABELS[state.lang][slot]);
   iconLabel.append(lbl);
@@ -404,14 +404,29 @@ function renderCard(slot) {
   card.append(hdr);
 
   // Value
-  const valWrap = mk("div",{style:{minHeight:"36px",display:"flex",alignItems:"center"}});
-  const val = mk("span",{
-    id:"val-"+slot,
-    style:{fontSize:"15px",fontWeight:"400",color:t.textMuted,fontStyle:"italic",
-      display:"block",width:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}
-  }, state.lang==="ru"?"Не выбрано":"Not generated");
-  valWrap.append(val);
-  card.append(valWrap);
+  const valWrap = mk("div",{style:{minHeight:"42px",display:"flex",alignItems:"center"}});
+const val = mk("span",{
+  id:"val-"+slot,
+  style:{
+    fontSize:"16px",
+    fontWeight:"400",
+    color:t.textMuted,
+    fontStyle:"italic",
+
+
+    display:"block",
+    width:"100%",
+
+    // FIX: норм перенос длинных названий
+    whiteSpace:"normal",
+    overflowWrap:"break-word",
+    wordBreak:"break-word",
+    lineHeight:"1.2"
+  }
+}, state.lang==="ru"?"Не выбрано":"Not generated");
+
+valWrap.append(val);
+card.append(valWrap);
 
   // Footer row
   const ftr = mk("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between"}});
