@@ -44,54 +44,15 @@ input[type=checkbox]{accent-color:#7c3aed}
 .cat-btn:hover{filter:brightness(1.08)}
 
 /* Lang/theme pill */
-.pill-btn{border:none;padding:5px 11px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:0.05em}
+.pill-btn{border:none;padding:5px 11px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:0.05em}
 
 /* Toast */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:8px 20px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:200}
-<style>
-html, body {
-  height: 100%;
-  margin: 0;
-  overflow-x: hidden;
-}
-body {
-  overflow-y: auto;
-}
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-}
-
-/* главный контейнер */
-#root {
-  max-width: 860px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 10px 24px;
-}
-
-/* 1K+ */
-@media (min-width: 1200px) {
-  #root {
-    max-width: 980px;
-  }
-}
-
-/* 2K+ */
-@media (min-width: 2000px) {
-  body {
-    font-size: 1.08em;
-  }
-
-  #root {
-    transform: scale(1.08);
-    transform-origin: top center;
-  }
-}
 </style>
 </head>
 <body>
-</div>
-<div id="root"></div>
+
+<div id="root" style="max-width:860px;margin:0 auto;padding:32px 24px"></div>
 <div id="toast"></div>
 
 <script>
@@ -132,7 +93,7 @@ const EXTRA_MODIFIERS = [
   {id:"long_neck",en:"Long Neck",ru:"Длинная Шея",desc:"an extremely elongated neck stretching far above the body"},
   {id:"hunchback",en:"Hunchback",ru:"Горб",desc:"a pronounced muscle and bone hump rising from the upper back"},
   {id:"elongated_body",en:"Elongated Body",ru:"Вытянутое Тело",desc:"the torso stretched to twice its normal length"},
-  {id:"serpentine_body",en:"Skelet/Zombi",ru:"Скелет/Зомби",desc:"the body reshaped into a long sinuous snake-like form"},
+  {id:"serpentine_body",en:"Serpentine Body",ru:"Змеиное Тело",desc:"the body reshaped into a long sinuous snake-like form"},
   {id:"two_horn_pairs",en:"Two Horn Pairs",ru:"Две Пары Рогов",desc:"two separate pairs of horns stacked above each other on the skull"},
   {id:"crown_of_horns",en:"Crown Of Horns",ru:"Корона Рогов",desc:"a full ring of outward-pointing horns circling the top of the skull"},
   {id:"double_fins",en:"Double Fins",ru:"Двойные Плавники",desc:"a second set of fins mirroring the first along the opposite side"},
@@ -191,7 +152,7 @@ function saveSettings() {
 
 const saved = loadSettings();
 const state = {
-  theme: saved.theme || "Dark",
+  theme: saved.theme || "Light",
   lang: saved.lang || "en",
   disabledCats: saved.disabledCats || [],
   selections: {}, // slot -> {name, desc, category}
@@ -425,7 +386,7 @@ function renderCard(slot) {
 
   const iconLabel = mk("div",{style:{display:"flex",alignItems:"center",gap:"6px"}});
   iconLabel.append(mk("span",{style:{fontSize:"14px"}}, SLOT_ICONS[slot]));
-  const lbl = mk("span",{id:"slotlabel-"+slot,style:{fontSize:"16px",fontWeight:"600",
+  const lbl = mk("span",{id:"slotlabel-"+slot,style:{fontSize:"10px",fontWeight:"600",
     color:t.textMuted,textTransform:"uppercase",letterSpacing:"0.09em"}},
     SLOT_LABELS[state.lang][slot]);
   iconLabel.append(lbl);
@@ -443,29 +404,14 @@ function renderCard(slot) {
   card.append(hdr);
 
   // Value
-  const valWrap = mk("div",{style:{minHeight:"42px",display:"flex",alignItems:"center"}});
-const val = mk("span",{
-  id:"val-"+slot,
-  style:{
-    fontSize:"16px",
-    fontWeight:"400",
-    color:t.textMuted,
-    fontStyle:"italic",
-
-
-    display:"block",
-    width:"100%",
-
-    // FIX: норм перенос длинных названий
-    whiteSpace:"normal",
-    overflowWrap:"break-word",
-    wordBreak:"break-word",
-    lineHeight:"1.2"
-  }
-}, state.lang==="ru"?"Не выбрано":"Not generated");
-
-valWrap.append(val);
-card.append(valWrap);
+  const valWrap = mk("div",{style:{minHeight:"36px",display:"flex",alignItems:"center"}});
+  const val = mk("span",{
+    id:"val-"+slot,
+    style:{fontSize:"15px",fontWeight:"400",color:t.textMuted,fontStyle:"italic",
+      display:"block",width:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}
+  }, state.lang==="ru"?"Не выбрано":"Not generated");
+  valWrap.append(val);
+  card.append(valWrap);
 
   // Footer row
   const ftr = mk("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between"}});
@@ -487,6 +433,21 @@ card.append(valWrap);
   card.append(ftr);
 
   return card;
+}
+
+// ─── Render: Prompt ───────────────────────────────────────────────────────
+
+function updatePrompt() {
+  const t = THEMES[state.theme];
+  const prompt = buildPrompt();
+  const wrap = $("prompt-wrap");
+  if (!wrap) return;
+
+  if (!prompt) { wrap.style.display = "none"; return; }
+  wrap.style.display = "flex";
+
+  const txt = $("prompt-text");
+  if (txt) txt.textContent = prompt;
 }
 
 // ─── Render: Settings ────────────────────────────────────────────────────
@@ -687,30 +648,7 @@ function renderApp() {
       onClick:() => { state.lang=l; saveSettings(); renderApp(); }
     },l.toUpperCase()));
   });
- const tgBtn = mk("a", {
-  href: "https://t.me/mutant_artist",
-  target: "_blank",
-  style: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    padding: "8px 10px",
-    borderRadius: "8px",
-    textDecoration: "none",
-    fontWeight: "600",
-    fontSize: "12px",
-    background: "#229ED9",
-    color: "#fff"
-  }
-}, "");
-
-tgBtn.innerHTML = `
-<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-  <path d="M9.04 15.47l-.39 5.5c.56 0 .8-.24 1.09-.53l2.64-2.53 5.47 4.01c1.01.56 1.73.27 1.99-.94l3.62-16.96h.01c.32-1.49-.54-2.07-1.52-1.7L1.6 9.6c-1.45.56-1.43 1.36-.25 1.72l5.06 1.58L18.8 5.1c.62-.41 1.18-.18.72.23"/>
-</svg>
-`;
-  headRight.append(tgBtn);
-  headRight.append (langWrap);
+  headRight.append(langWrap);
 
   // Settings btn
   headRight.append(mk("button",{
