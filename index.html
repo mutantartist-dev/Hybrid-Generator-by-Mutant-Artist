@@ -16,9 +16,6 @@ input[type=checkbox]{accent-color:#7c3aed}
 @keyframes spinFlash{0%,100%{opacity:1}50%{opacity:0.5}}
 .spinning{animation:spinFlash 0.1s ease-in-out infinite}
 
-/* Prompt text selectable */
-.prompt-text{user-select:text;cursor:text}
-
 /* Card hover */
 .slot-card{transition:border-color 0.2s,box-shadow 0.2s,transform 0.15s}
 .slot-card:hover{transform:translateY(-1px)}
@@ -206,12 +203,7 @@ function pickRandom(pool, slot) {
   };
 }
 
-function buildPrompt() {
-  const parts = SLOTS.map(s => state.selections[s]?.desc).filter(Boolean);
-  if (!parts.length) return "";
-  if (parts.length === 1) return `A hybrid creature with ${parts[0]}. Fantasy concept art, ultra detailed, dramatic lighting.`;
-  return `A hybrid creature with ${parts.slice(0,-1).join(", ")}, and ${parts[parts.length-1]}. Fantasy concept art, ultra detailed, dramatic lighting.`;
-}
+
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────
 
